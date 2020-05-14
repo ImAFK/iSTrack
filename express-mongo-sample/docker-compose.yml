@@ -1,0 +1,17 @@
+version: "2"
+
+volumes:
+    mongo-data:
+
+services:
+  mongo:
+    build: ./rpi3-mongodb3
+    restart: always
+    volumes:
+      - 'mongo-data:/data/db'
+    expose:
+      - "27017"
+  mqtt_client:
+    depends_on:
+      - mongo
+    build: ./mqtt_client
