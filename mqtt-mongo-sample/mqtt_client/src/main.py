@@ -14,8 +14,8 @@ import json
 # Set variables for broker and topics (optionaly load from config)
 # set topics: (topic, QoS)
 mqtt_topic = [('NTUST/gateA',0),('NTUST/gateB',0),('NTUST/gateC',0)]
-# mqtt_broker_ip = "192.168.50.21"
-mqtt_broker_ip = 'test.mosquitto.org'
+mqtt_broker_ip = '172.17.0.4'
+# mqtt_broker_ip = 'test.mosquitto.org'
 mqtt_port = 1883
 
 # Load credentials from config file
@@ -32,7 +32,7 @@ else:
 	mqtt_username = creds_config['DEFAULT']['mqtt_username']
 	mqtt_password = creds_config['DEFAULT']['mqtt_password']
 
-
+# Connect to the MongoDB
 client = MongoClient('mongo', 27017)
 
 # These functions handle what happens when the MQTT client connects
@@ -46,8 +46,8 @@ def on_connect(mqtt_client, userdata, flags, rc):
     else:
         print('Connection failed, ' + str(rc))
 
-    while Connected != True:    # Wait for connection
-        time.sleep(0.1)
+    # while Connected != True:    # Wait for connection
+    #     time.sleep(0.1)
     # Once the client has connected to the broker, subscribe to the topic
     mqtt_client.subscribe(mqtt_topic)
 
@@ -62,6 +62,7 @@ def on_message(mqtt_client, userdata, message):
     # JSON Example
     # {"id":"dkjfk4k23jk","temperature":"36.9"}
 
+    # service prints & write to the file
     print(str(message.topic))
     print('Id:' + m_in['id'])
     print('Temperature:' + m_in['temperature'])
@@ -73,6 +74,7 @@ def on_message(mqtt_client, userdata, message):
     # and details about who sent it are stored in userdata
 
     # TODO put records into DB in appropriate format
+    # Write received data into DB
     with client:
         db = client.recordsData
         col = db.data
@@ -82,8 +84,8 @@ def on_message(mqtt_client, userdata, message):
         x = col.insert_one(read)
         print('Data inserted...')
 
-        # Testing purpose
-        myquery = {'id': '32681ddkk'}
+        # Testing purpose for printing some stuff from DB
+        myquery = {'id': 'f6e314a3'}
         mydoc = col.find(myquery)
         for i in mydoc:
             print(i)
@@ -95,8 +97,15 @@ def on_message(mqtt_client, userdata, message):
 # Create MQTT client
 mqtt_client = mqtt.Client('NTUST')
 # Set the username and password for the MQTT client
+
 # client.username_pw_set(mqtt_username, mqtt_password)
 
+# mqtt_docker = mqtt.Client('Docker')
+# mqtt_docker.on_connect = on_connect
+# mqtt_docker.on_message = on_message
+# mqtt_docker.connect('172.17.0.4',1883)
+# print('Mqtt docker set up and connected')
+# mqtt_docker.loop_forever()
 
 # Here, we are telling the client which functions are to be run
 # on connecting, and on receiving a message
@@ -112,8 +121,9 @@ mqtt_client.connect(mqtt_broker_ip, mqtt_port)
 mqtt_client.loop_forever()
 
 
+
 # Once we have told the client to connect, let the client object run itself
 # Disconnect client
 mqtt_client.disconnect()
-
+# mqtt_docker.disconnect()
 

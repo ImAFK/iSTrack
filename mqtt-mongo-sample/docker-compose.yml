@@ -11,7 +11,12 @@ services:
       - 'mongo-data:/data/db'
     expose:
       - "27017"
+  mqtt:
+    image: arm32v6/eclipse-mosquitto
+    ports:
+      - "1883:1883"
   mqtt_client:
     depends_on:
       - mongo
+      #- mqtt
     build: ./mqtt_client
