@@ -60,16 +60,12 @@ def on_message(mqtt_client, userdata, message):
     m_in = json.loads(m_decode)
 
     # JSON Example
-    # {"id":"dkjfk4k23jk","temperature":"36.9"}
+    # {"id":"f6e314a3","temperature":"36.9"}
 
     # service prints & write to the file
     print(str(message.topic))
     print('Id:' + m_in['id'])
     print('Temperature:' + m_in['temperature'])
-    # with open('./temperature.txt', 'a') as temp_out:
-    #     temp_out.write(str(message.topic) + '\n')
-    #     temp_out.write('Id:' + m_in['id'] + '\n')
-    #     temp_out.write('Temperature:' + m_in['temperature'] + '\n')
     # The message itself is stored in the msg variable
     # and details about who sent it are stored in userdata
 
@@ -85,10 +81,10 @@ def on_message(mqtt_client, userdata, message):
         checked = col.find(check_id)
         for i in checked:
             print(i)
-
         # basically check wheter id exists or not
         # if not, publish mqtt msg to the edge device
 
+        # If id exists
 	    # Read data and save to database
         current_time = datetime.now()
         read = { 'time': current_time, 'id': m_in['id'], 'temperature': m_in['temperature'] }
@@ -109,12 +105,6 @@ mqtt_client = mqtt.Client('NTUST')
 
 # client.username_pw_set(mqtt_username, mqtt_password)
 
-# mqtt_docker = mqtt.Client('Docker')
-# mqtt_docker.on_connect = on_connect
-# mqtt_docker.on_message = on_message
-# mqtt_docker.connect('172.17.0.4',1883)
-# print('Mqtt docker set up and connected')
-# mqtt_docker.loop_forever()
 
 # Here, we are telling the client which functions are to be run
 # on connecting, and on receiving a message
@@ -134,5 +124,4 @@ mqtt_client.loop_forever()
 # Once we have told the client to connect, let the client object run itself
 # Disconnect client
 mqtt_client.disconnect()
-# mqtt_docker.disconnect()
 
