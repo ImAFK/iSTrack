@@ -66,18 +66,29 @@ def on_message(mqtt_client, userdata, message):
     print(str(message.topic))
     print('Id:' + m_in['id'])
     print('Temperature:' + m_in['temperature'])
-    with open('./temperature.txt', 'a') as temp_out:
-        temp_out.write(str(message.topic) + '\n')
-        temp_out.write('Id:' + m_in['id'] + '\n')
-        temp_out.write('Temperature:' + m_in['temperature'] + '\n')
+    # with open('./temperature.txt', 'a') as temp_out:
+    #     temp_out.write(str(message.topic) + '\n')
+    #     temp_out.write('Id:' + m_in['id'] + '\n')
+    #     temp_out.write('Temperature:' + m_in['temperature'] + '\n')
     # The message itself is stored in the msg variable
     # and details about who sent it are stored in userdata
+
 
     # TODO put records into DB in appropriate format
     # Write received data into DB
     with client:
         db = client.recordsData
         col = db.data
+
+        # TODO check id, publish message to the edge
+        check_id = {'id': m_in['id']}
+        checked = col.find(check_id)
+        for i in checked:
+            print(i)
+
+        # basically check wheter id exists or not
+        # if not, publish mqtt msg to the edge device
+
 	    # Read data and save to database
         current_time = datetime.now()
         read = { 'time': current_time, 'id': m_in['id'], 'temperature': m_in['temperature'] }
@@ -85,14 +96,12 @@ def on_message(mqtt_client, userdata, message):
         print('Data inserted...')
 
         # Testing purpose for printing some stuff from DB
-        myquery = {'id': 'f6e314a3'}
-        mydoc = col.find(myquery)
-        for i in mydoc:
-            print(i)
+        # myquery = {'id': 'f6e314a3'}
+        # mydoc = col.find(myquery)
+        # for i in mydoc:
+        #     print(i)
 
-        # TODO check id, publish message to the edge
-        # basically check wheter id exists or not
-        # if not, publish mqtt msg to the edge device
+
 
 # Create MQTT client
 mqtt_client = mqtt.Client('NTUST')
