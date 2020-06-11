@@ -1,20 +1,19 @@
 #!/usr/bin/env python3.7
 
 # import necessarry libraries
-import sys
 from datetime import datetime
 from pymongo import MongoClient
 import paho.mqtt.client as mqtt
-import time
 import configparser
 import os
 import json
-
+from UtilsLibrary import CloudSender
+from models.record import Record
 
 # Set variables for broker and topics (optionaly load from config)
 # set topics: (topic, QoS)
 mqtt_topic = [('NTUST/gateA',0),('NTUST/gateB',0),('NTUST/gateC',0)]
-mqtt_broker_ip = '172.17.0.4'
+mqtt_broker_ip = '172.17.0.2'
 # mqtt_broker_ip = 'test.mosquitto.org'
 mqtt_port = 1883
 
@@ -33,7 +32,11 @@ else:
 	mqtt_password = creds_config['DEFAULT']['mqtt_password']
 
 # Connect to the MongoDB
-client = MongoClient('mongo', 27017)
+mongoClient = MongoClient('mongo', 27017)
+
+# options: OK, NOT OK, WRONG, False
+receivedMsg = 'False'
+topic = ''
 
 # These functions handle what happens when the MQTT client connects
 # to the broker, and what happens then the topic receives a message
@@ -51,6 +54,10 @@ def on_connect(mqtt_client, userdata, flags, rc):
     # Once the client has connected to the broker, subscribe to the topic
     mqtt_client.subscribe(mqtt_topic)
 
+def on_publish(mqtt_client, userdata, result):
+    print('Data published')
+    pass
+
 
 def on_message(mqtt_client, userdata, message):
     # This function is called every time the topic is published to.
@@ -59,35 +66,51 @@ def on_message(mqtt_client, userdata, message):
     m_decode = str(message.payload.decode('utf-8', 'ignore'))
     m_in = json.loads(m_decode)
 
+    temperature = m_in['temperature']
+    user_id = m_in['id']
+    topic = message.topic
+
     # JSON Example
     # {"id":"f6e314a3","temperature":"36.9"}
 
     # service prints & write to the file
     print(str(message.topic))
-    print('Id:' + m_in['id'])
-    print('Temperature:' + m_in['temperature'])
+    print('Id:' + user_id)
+    print('Temperature:' + temperature)
     # The message itself is stored in the msg variable
     # and details about who sent it are stored in userdata
 
 
     # TODO put records into DB in appropriate format
     # Write received data into DB
-    with client:
-        db = client.recordsData
+    with mongoClient:
+        db = mongoClient.recordsData
         col = db.data
 
         # TODO check id, publish message to the edge
-        check_id = {'id': m_in['id']}
+        check_id = {'id': user_id}
         checked = col.find(check_id)
         for i in checked:
             print(i)
+
+        temperature = float(temperature)
+        if checked is not None:
+            print('Msg checked, id exists')
+            if temperature < 37.0:
+                receivedMsg = 'OK'
+            else:
+                receivedMsg = 'NOT OK'
+        else:
+            print('Msg checked, error')
+            receivedMsg = 'WRONG'
         # basically check wheter id exists or not
         # if not, publish mqtt msg to the edge device
 
         # If id exists
 	    # Read data and save to database
         current_time = datetime.now()
-        read = { 'time': current_time, 'id': m_in['id'], 'temperature': m_in['temperature'] }
+
+        read = { 'time': current_time, 'id': user_id, 'temperature': temperature}
         x = col.insert_one(read)
         print('Data inserted...')
 
@@ -110,15 +133,33 @@ mqtt_client = mqtt.Client('NTUST')
 # on connecting, and on receiving a message
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = on_message
+mqtt_client.on_publish = on_publish
 
 # Once everything has been set up, we can (finally) connect to the broker
 # mqtt_port is the listener port that the MQTT broker is using
 mqtt_client.connect(mqtt_broker_ip, mqtt_port)
 
 #start the loop
-# client.loop_start()
-mqtt_client.loop_forever()
+mqtt_client.loop_start()
 
+while True:
+    if receivedMsg is not 'False':
+        topic = topic + 'response'
+        mqtt_client.publish(topic=topic, payload=receivedMsg)
+        receivedMsg = 'False'
+    # if receivedMsg is 'OK':
+    #     mqtt_client.publish(topic=topic, payload=receivedMsg)
+    #     pass
+    # elif receivedMsg is 'NOT OK':
+    #     pass
+    # elif receivedMsg is 'WRONG':
+
+    else:
+        continue
+
+
+mqtt_client.loop_stop()
+# mqtt_client.loop_forever()
 
 
 # Once we have told the client to connect, let the client object run itself

@@ -1,6 +1,7 @@
 from mongoengine import *
 import datetime
 
+
 class Record (Document):
 
     id_number = StringField(required=True, unique = True )

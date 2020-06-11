@@ -1,14 +1,32 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from record import Record
+from models.record import Record
 import pprint
+import configparser
+import os
+
 
 class CloudSender(object):
     """ implementation of CRUD operations on Records collection in MongoDB """
 
-    def connect():
-        client = MongoClient("mongodb://admin:password@id4c.myqnapcloud.com:37011/")
-        db = client['test']
+    def connect(self):
+        if not os.path.exists('/usr/src/app/src/credentials.conf'):
+            print('Config not found')
+            return -1
+        else:
+            # load credentials
+            creds_config = configparser.ConfigParser()
+            creds_config.read('/usr/src/app/src/credentials.conf')
+            atmongo_username = creds_config['ATMongo']['atmongo_username']
+            atmongo_password = creds_config['ATMongo']['atmongo_password']
+            atmongo_host = creds_config['ATMongo']['atmongo_host']
+            atmongo_port = creds_config['ATMongo']['atmongo_port']
+            atmongo_db = creds_config['ATMongo']['atmongo_db']
+
+        client = MongoClient('mongodb://' + atmongo_username + ':' + atmongo_password +
+                             '@' + atmongo_host + ':' + atmongo_port)
+        db = client[atmongo_db]
+        # TODO return if connect successful/failed
 
 
 
@@ -18,7 +36,7 @@ class CloudSender(object):
         #self.client = MongoClient(host='mongodb://id4c.myqnapcloud.com/', port=37011/)
         #self.cli
         #self.database = self.client['records']
-
+        pass
 
     def create(self, record):
         if record is not None:

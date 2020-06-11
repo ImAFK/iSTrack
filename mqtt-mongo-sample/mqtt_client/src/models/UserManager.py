@@ -1,5 +1,4 @@
 from mongoengine import *
-#connect('test', host='mongodb://id4c.myqnapcloud.com/', port=37011, username = 'admin', password = 'password')
 from user import User
 
 class UserManager:
@@ -27,5 +26,5 @@ class UserManager:
        if user is not None:
            user.delete()
            return True
-        else:
+       else:
             return False

@@ -1,10 +1,25 @@
 from mongoengine import *
-#connect('test', host='mongodb://id4c.myqnapcloud.com/', port=37011, username = 'admin', password = 'password')
 from record import Record
+import os
 
 class RecordManager:
     def __init__(self):
-        connect('admin', host='mongodb://id4c.myqnapcloud.com/', port=37011, username = 'admin', password = 'password')
+        if not os.path.exists('/usr/src/app/src/credentials.conf'):
+            print('Config not found')
+        else:
+            # load credentials
+            creds_config = configparser.ConfigParser()
+            creds_config.read('/usr/src/app/src/credentials.conf')
+            atmongo_username = creds_config['ATMongo']['atmongo_username']
+            atmongo_password = creds_config['ATMongo']['atmongo_password']
+            atmongo_host = creds_config['ATMongo']['atmongo_host']
+            atmongo_port = creds_config['ATMongo']['atmongo_port']
+            atmongo_db = creds_config['ATMongo']['atmongo_db']
+        connect(atmongo_db,
+                host='mongodb://' + atmongo_host,
+                port=atmongo_port,
+                username = atmongo_username,
+                password = atmongo_password)
         pass
     
     def save(self, record):
@@ -32,5 +47,5 @@ class RecordManager:
        if record is not None:
            record.delete()
            return True
-        else:
+       else:
             return False
