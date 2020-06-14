@@ -1,3 +1,5 @@
+'''
+
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from models.record import Record
@@ -17,11 +19,11 @@ class CloudSender(object):
             # load credentials
             creds_config = configparser.ConfigParser()
             creds_config.read('/usr/src/app/src/credentials.conf')
-            atmongo_username = creds_config['ATMongo']['atmongo_username']
-            atmongo_password = creds_config['ATMongo']['atmongo_password']
-            atmongo_host = creds_config['ATMongo']['atmongo_host']
-            atmongo_port = creds_config['ATMongo']['atmongo_port']
-            atmongo_db = creds_config['ATMongo']['atmongo_db']
+            atmongo_username = os.environ['atmongo_username']
+            atmongo_password = os.environ['atmongo_password']
+            atmongo_host = os.environ['atmongo_host']
+            atmongo_port = os.environ['atmongo_port']
+            atmongo_db = os.environ['atmongo_db']
 
         client = MongoClient('mongodb://' + atmongo_username + ':' + atmongo_password +
                              '@' + atmongo_host + ':' + atmongo_port)
@@ -67,3 +69,4 @@ class CloudSender(object):
             self.database.records.remove(record.get_as_json())            
         else:
             raise Exception("Nothing to delete, because record parameter is None")
+'''

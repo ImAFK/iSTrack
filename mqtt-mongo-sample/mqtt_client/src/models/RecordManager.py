@@ -1,20 +1,24 @@
 from mongoengine import *
 from record import Record
 import os
+from dotenv import load_dotenv
+
+# Get the path to the directory this file is in
+BASEDIR = os.path.abspath(os.path.dirname(__file__),)
+PATH = os.path.join(BASEDIR, '..','.env')
+# Connect the path with your '.env' file name
+load_dotenv(PATH)
 
 class RecordManager:
     def __init__(self):
-        if not os.path.exists('/usr/src/app/src/credentials.conf'):
-            print('Config not found')
-        else:
             # load credentials
-            creds_config = configparser.ConfigParser()
-            creds_config.read('/usr/src/app/src/credentials.conf')
-            atmongo_username = creds_config['ATMongo']['atmongo_username']
-            atmongo_password = creds_config['ATMongo']['atmongo_password']
-            atmongo_host = creds_config['ATMongo']['atmongo_host']
-            atmongo_port = creds_config['ATMongo']['atmongo_port']
-            atmongo_db = creds_config['ATMongo']['atmongo_db']
+        
+        atmongo_username = os.getenv('atmongo_username')
+        atmongo_password = os.getenv('atmongo_password')
+        atmongo_host = os.getenv('atmongo_host')
+        atmongo_port = int(os.getenv('atmongo_port'))
+        atmongo_db = os.getenv('atmongo_db')
+       
         connect(atmongo_db,
                 host='mongodb://' + atmongo_host,
                 port=atmongo_port,
