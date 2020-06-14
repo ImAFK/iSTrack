@@ -7,8 +7,16 @@ import paho.mqtt.client as mqtt
 import configparser
 import os
 import json
-from UtilsLibrary import CloudSender
+from dotenv import load_dotenv
 from models.record import Record
+from models.RecordManager import RecordManager
+
+# Get the path to the directory this file is in
+BASEDIR = os.path.abspath(os.path.dirname(__file__),)
+PATH = os.path.join(BASEDIR,'.env')
+# Connect the path with your '.env' file name
+load_dotenv(PATH)
+
 
 # Set variables for broker and topics (optionaly load from config)
 # set topics: (topic, QoS)
@@ -20,16 +28,8 @@ mqtt_port = 1883
 # Load credentials from config file
 # improvement: pass configs as parameters
 # Check if config exists
-mqtt_username = ''
-mqtt_password = ''
-if not os.path.exists('/usr/src/app/src/credentials.conf'):
-    print('Config not found')
-else:
-	# load usr & pwd
-	creds_config = configparser.ConfigParser()
-	creds_config.read('/usr/src/app/src/credentials.conf')
-	mqtt_username = creds_config['DEFAULT']['mqtt_username']
-	mqtt_password = creds_config['DEFAULT']['mqtt_password']
+mqtt_username = os.getenv('mqtt_username')
+mqtt_password = os.getenv('mqtt_password')
 
 # Connect to the MongoDB
 mongoClient = MongoClient('mongo', 27017)
@@ -79,6 +79,14 @@ def on_message(mqtt_client, userdata, message):
     print('Temperature:' + temperature)
     # The message itself is stored in the msg variable
     # and details about who sent it are stored in userdata
+
+    ## SAVING DATA TO CLOUD DB
+
+    #Create new object with all informations
+    record = Record(user_id, "NTUST" , temperature, datetime.date.now())
+    #Save to Database
+    recordManager = RecordManager()
+    recordManager.save(record)
 
 
     # TODO put records into DB in appropriate format
