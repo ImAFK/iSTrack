@@ -4,19 +4,17 @@ from RecordManager import RecordManager
 from UserManager import UserManager
 
 
-"""record_1 = Record (
+record_1 = Record (
     id_number = '12345673',
     location = 'National Taiwan University of Science and Technology',
-    first_name = 'John',
-    last_name = 'Doe',
     body_temperature = 36.7
 )
 
 recordManager = RecordManager()
 #recordManager.save(record_1)
 
-record = recordManager.readById("12345679")
-print(record.to_json())"""
+record = recordManager.readAll()
+print(record.to_json())
 
 
 
@@ -28,8 +26,8 @@ user_1 = User(
     email = "JeremyToulanlan@gmail.com"
 )
 
-userManager = UserManager()
+#userManager = UserManager()
 #userManager.save(user_1)
 
-user = userManager.readAll()
-print(user.to_json())
+#user = userManager.readAll()
+#print(user.to_json())
