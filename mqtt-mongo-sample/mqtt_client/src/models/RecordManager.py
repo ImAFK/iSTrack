@@ -1,5 +1,6 @@
 from mongoengine import *
-from record import Record
+from models.record import Record
+from models.record import Record
 import os
 from dotenv import load_dotenv
 
@@ -10,20 +11,39 @@ PATH = os.path.join(BASEDIR, '..','.env')
 load_dotenv(PATH)
 
 class RecordManager:
-    def __init__(self):
-            # load credentials
-        
-        atmongo_username = os.getenv('atmongo_username')
-        atmongo_password = os.getenv('atmongo_password')
-        atmongo_host = os.getenv('atmongo_host')
-        atmongo_port = int(os.getenv('atmongo_port'))
-        atmongo_db = os.getenv('atmongo_db')
-       
-        connect(atmongo_db,
-                host='mongodb://' + atmongo_host,
-                port=atmongo_port,
-                username = atmongo_username,
-                password = atmongo_password)
+    def __init__(self, server):
+        if server is 'rpi':
+            rpimongo_db = 'recordsData'
+            rpimongo_port = 27017
+            rpimongo_host = 'mongo'
+            connect(rpimongo_db,
+                    host='mongodb://' + rpimongo_host,
+                    port=rpimongo_port,
+                    alias='rpi')
+        elif server is 'advantech':
+            atmongo_username = os.getenv('atmongo_username')
+            atmongo_password = os.getenv('atmongo_password')
+            atmongo_host = os.getenv('atmongo_host')
+            atmongo_port = int(os.getenv('atmongo_port'))
+            atmongo_db = os.getenv('atmongo_db')
+
+            connect(atmongo_db,
+                    host='mongodb://' + atmongo_host,
+                    port=atmongo_port,
+                    username=atmongo_username,
+                    password=atmongo_password)
+        # load credentials
+        # atmongo_username = os.getenv('atmongo_username')
+        # atmongo_password = os.getenv('atmongo_password')
+        # atmongo_host = os.getenv('atmongo_host')
+        # atmongo_port = int(os.getenv('atmongo_port'))
+        # atmongo_db = os.getenv('atmongo_db')
+        #
+        # connect(atmongo_db,
+        #         host='mongodb://' + atmongo_host,
+        #         port=atmongo_port,
+        #         username = atmongo_username,
+        #         password = atmongo_password)
         pass
     
     def save(self, record):

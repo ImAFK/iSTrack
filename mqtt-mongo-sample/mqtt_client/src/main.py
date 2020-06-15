@@ -4,7 +4,6 @@
 from datetime import datetime
 from pymongo import MongoClient
 import paho.mqtt.client as mqtt
-import configparser
 import os
 import json
 from dotenv import load_dotenv
@@ -31,12 +30,16 @@ mqtt_port = 1883
 mqtt_username = os.getenv('mqtt_username')
 mqtt_password = os.getenv('mqtt_password')
 
-# Connect to the MongoDB
+# Connect to the local MongoDB
 mongoClient = MongoClient('mongo', 27017)
 
 # options: OK, NOT OK, WRONG, False
 receivedMsg = 'False'
 topic = ''
+
+# Check wheter received message is okay (user id, temperature etc.)
+def check_msg():
+    pass
 
 # These functions handle what happens when the MQTT client connects
 # to the broker, and what happens then the topic receives a message
@@ -48,9 +51,6 @@ def on_connect(mqtt_client, userdata, flags, rc):
         Connected = True                #Signal connection
     else:
         print('Connection failed, ' + str(rc))
-
-    # while Connected != True:    # Wait for connection
-    #     time.sleep(0.1)
     # Once the client has connected to the broker, subscribe to the topic
     mqtt_client.subscribe(mqtt_topic)
 
@@ -67,13 +67,14 @@ def on_message(mqtt_client, userdata, message):
     m_in = json.loads(m_decode)
 
     temperature = m_in['temperature']
+    temperature = float(temperature)
     user_id = m_in['id']
     topic = message.topic
 
     # JSON Example
     # {"id":"f6e314a3","temperature":"36.9"}
 
-    # service prints & write to the file
+    # service prints
     print(str(message.topic))
     print('Id:' + user_id)
     print('Temperature:' + temperature)
@@ -83,11 +84,13 @@ def on_message(mqtt_client, userdata, message):
     ## SAVING DATA TO CLOUD DB
 
     #Create new object with all informations
-    record = Record(user_id, "NTUST" , temperature, datetime.date.now())
+    record = Record(id_number=user_id, location='NTUST', body_temperature=temperature, date=datetime.now())
+    # record = Record(user_id, "NTUST" , temperature, datetime.date.now())
     #Save to Database
-    recordManager = RecordManager()
-    recordManager.save(record)
+    recordManagerAdvantech = RecordManager('advantech')
+    recordManagerAdvantech.save(record)
 
+    recordManagerRpi = RecordManager('rpi')
 
     # TODO put records into DB in appropriate format
     # Write received data into DB
@@ -95,22 +98,22 @@ def on_message(mqtt_client, userdata, message):
         db = mongoClient.recordsData
         col = db.data
 
-        # TODO check id, publish message to the edge
+        # check id, publish message to the edge
         check_id = {'id': user_id}
+        checked = None
         checked = col.find(check_id)
-        for i in checked:
-            print(i)
-
-        temperature = float(temperature)
+        # for i in checked:
+        #     print(i)
         if checked is not None:
             print('Msg checked, id exists')
-            if temperature < 37.0:
+            if temperature < 37.5:
                 receivedMsg = 'OK'
             else:
                 receivedMsg = 'NOT OK'
         else:
             print('Msg checked, error')
             receivedMsg = 'WRONG'
+            return
         # basically check wheter id exists or not
         # if not, publish mqtt msg to the edge device
 
