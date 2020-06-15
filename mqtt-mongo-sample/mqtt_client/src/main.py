@@ -20,7 +20,7 @@ load_dotenv(PATH)
 # Set variables for broker and topics (optionaly load from config)
 # set topics: (topic, QoS)
 mqtt_topic = [('NTUST/gateA',0),('NTUST/gateB',0),('NTUST/gateC',0)]
-mqtt_broker_ip = '172.17.0.2'
+mqtt_broker_ip = 'mqtt'
 # mqtt_broker_ip = 'test.mosquitto.org'
 mqtt_port = 1883
 

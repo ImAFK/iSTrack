@@ -1,6 +1,5 @@
 from mongoengine import *
 from models.record import Record
-from models.record import Record
 import os
 from dotenv import load_dotenv
 
@@ -31,7 +30,8 @@ class RecordManager:
                     host='mongodb://' + atmongo_host,
                     port=atmongo_port,
                     username=atmongo_username,
-                    password=atmongo_password)
+                    password=atmongo_password,
+                    alias='default')
         # load credentials
         # atmongo_username = os.getenv('atmongo_username')
         # atmongo_password = os.getenv('atmongo_password')
