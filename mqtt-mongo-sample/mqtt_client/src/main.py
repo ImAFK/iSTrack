@@ -77,7 +77,7 @@ def on_message(mqtt_client, userdata, message):
     # service prints
     print(str(message.topic))
     print('Id:' + user_id)
-    print('Temperature:' + temperature)
+    print('Temperature:' + str(temperature))
     # The message itself is stored in the msg variable
     # and details about who sent it are stored in userdata
 
@@ -87,10 +87,10 @@ def on_message(mqtt_client, userdata, message):
     record = Record(id_number=user_id, location='NTUST', body_temperature=temperature, date=datetime.now())
     # record = Record(user_id, "NTUST" , temperature, datetime.date.now())
     #Save to Database
-    recordManagerAdvantech = RecordManager('advantech')
+    recordManagerAdvantech = RecordManager()
     recordManagerAdvantech.save(record)
 
-    recordManagerRpi = RecordManager('rpi')
+    # recordManagerRpi = RecordManager('rpi')
 
     # TODO put records into DB in appropriate format
     # Write received data into DB
@@ -101,7 +101,8 @@ def on_message(mqtt_client, userdata, message):
         # check id, publish message to the edge
         check_id = {'id': user_id}
         checked = None
-        checked = col.find(check_id)
+        # checked = col.find(check_id)
+        checked = recordManagerAdvantech.readById(user_id)
         # for i in checked:
         #     print(i)
         if checked is not None:
