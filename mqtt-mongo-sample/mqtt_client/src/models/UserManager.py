@@ -1,10 +1,27 @@
 from mongoengine import *
-from user import User
+from models.user import User
+import os
+from dotenv import load_dotenv
+
+# Get the path to the directory this file is in
+BASEDIR = os.path.abspath(os.path.dirname(__file__),)
+PATH = os.path.join(BASEDIR, '..','.env')
+# Connect the path with your '.env' file name
+load_dotenv(PATH)
 
 class UserManager:
-    def __init__(self):
-        connect('admin', host='mongodb://id4c.myqnapcloud.com/', port=37011, username = 'admin', password = 'password')
-        pass
+    def __init__(self, server):
+        atmongo_username = os.getenv('atmongo_username')
+        atmongo_password = os.getenv('atmongo_password')
+        atmongo_host = os.getenv('atmongo_host')
+        atmongo_port = int(os.getenv('atmongo_port'))
+        atmongo_db = os.getenv('atmongo_db')
+
+        connect(atmongo_db,
+                host='mongodb://' + atmongo_host,
+                port=atmongo_port,
+                username=atmongo_username,
+                password=atmongo_password)
     
     def save(self, user):
         if user is not None:
@@ -28,3 +45,7 @@ class UserManager:
            return True
        else:
             return False
+
+    def disconnect(self, alias):
+        disconnect(alias=alias)
+

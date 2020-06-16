@@ -6,7 +6,8 @@ RUN pip3 install --upgrade \
 	pymongo \
 	request \
 	paho-mqtt \
-	mongoengine
+	mongoengine \
+	python-dotenv
 
 # Set our working directory
 WORKDIR /usr/src/app
