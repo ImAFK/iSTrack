@@ -10,7 +10,7 @@ PATH = os.path.join(BASEDIR, '..','.env')
 load_dotenv(PATH)
 
 class UserManager:
-    def __init__(self, server):
+    def __init__(self):
         atmongo_username = os.getenv('atmongo_username')
         atmongo_password = os.getenv('atmongo_password')
         atmongo_host = os.getenv('atmongo_host')
@@ -46,6 +46,6 @@ class UserManager:
        else:
             return False
 
-    def disconnect(self, alias):
-        disconnect(alias=alias)
+    def disconnect(self):
+        disconnect()
 

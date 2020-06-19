@@ -9,6 +9,8 @@ import json
 from dotenv import load_dotenv
 from models.record import Record
 from models.RecordManager import RecordManager
+from models.user import User
+from models.UserManager import UserManager
 
 # Get the path to the directory this file is in
 BASEDIR = os.path.abspath(os.path.dirname(__file__),)
@@ -40,6 +42,47 @@ topic = ''
 # Check wheter received message is okay (user id, temperature etc.)
 def check_msg():
     pass
+
+def check_and_save_record(user_id, temperature, topic):
+    ## SAVING DATA TO CLOUD DB
+    userManager = UserManager()
+    check_id = userManager.readById(user_id)
+    userManager.disconnect()
+    if len(check_id) is 0:
+        print('User does not exist')
+        receivedMsg = 'WRONG'
+        return receivedMsg
+    else:
+        # Create new object with all informations
+        record = Record(id_number=user_id, location=topic, body_temperature=temperature, date=datetime.now())
+        # Save to Database
+        recordManagerAdvantech = RecordManager()
+        recordManagerAdvantech.save(record)
+        recordManagerAdvantech.disconnect()
+
+        # Write received data into DB
+        with mongoClient:
+            db = mongoClient.record
+            col = db.data
+
+            # check temperature, publish message to the edge
+            if temperature < 37.5:
+                receivedMsg = 'OK'
+            else:
+                receivedMsg = 'NOT OK'
+                # DO SOMETHING
+            # basically check wheter id exists or not
+            # if not, publish mqtt msg to the edge device
+
+            # If id exists
+            # Read data and save to database
+            current_time = datetime.now()
+
+            read = {'id_number': user_id, 'location': topic, 'body_temperature': temperature, 'date': current_time, }
+            x = col.insert_one(read)
+            print('Data inserted with msg...', end='')
+            print(receivedMsg)
+            return receivedMsg
 
 # These functions handle what happens when the MQTT client connects
 # to the broker, and what happens then the topic receives a message
@@ -81,57 +124,7 @@ def on_message(mqtt_client, userdata, message):
     # The message itself is stored in the msg variable
     # and details about who sent it are stored in userdata
 
-    ## SAVING DATA TO CLOUD DB
-
-    #Create new object with all informations
-    record = Record(id_number=user_id, location='NTUST', body_temperature=temperature, date=datetime.now())
-    # record = Record(user_id, "NTUST" , temperature, datetime.date.now())
-    #Save to Database
-    recordManagerAdvantech = RecordManager()
-    recordManagerAdvantech.save(record)
-
-    # recordManagerRpi = RecordManager('rpi')
-
-    # TODO put records into DB in appropriate format
-    # Write received data into DB
-    with mongoClient:
-        db = mongoClient.recordsData
-        col = db.data
-
-        # check id, publish message to the edge
-        check_id = {'id': user_id}
-        checked = None
-        # checked = col.find(check_id)
-        checked = recordManagerAdvantech.readById(user_id)
-        # for i in checked:
-        #     print(i)
-        if checked is not None:
-            print('Msg checked, id exists')
-            if temperature < 37.5:
-                receivedMsg = 'OK'
-            else:
-                receivedMsg = 'NOT OK'
-        else:
-            print('Msg checked, error')
-            receivedMsg = 'WRONG'
-            return
-        # basically check wheter id exists or not
-        # if not, publish mqtt msg to the edge device
-
-        # If id exists
-	    # Read data and save to database
-        current_time = datetime.now()
-
-        read = { 'time': current_time, 'id': user_id, 'temperature': temperature}
-        x = col.insert_one(read)
-        print('Data inserted...')
-
-        # Testing purpose for printing some stuff from DB
-        # myquery = {'id': 'f6e314a3'}
-        # mydoc = col.find(myquery)
-        # for i in mydoc:
-        #     print(i)
-
+    result = check_and_save_record(user_id, temperature, topic)
 
 
 # Create MQTT client
@@ -169,10 +162,8 @@ while True:
     else:
         continue
 
-
 mqtt_client.loop_stop()
 # mqtt_client.loop_forever()
-
 
 # Once we have told the client to connect, let the client object run itself
 # Disconnect client
