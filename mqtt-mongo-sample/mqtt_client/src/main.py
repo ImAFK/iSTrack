@@ -42,8 +42,10 @@ topic = ''
 # Check wheter received message is okay (user id, temperature etc.)
 def check_msg():
     pass
-
+# check if user_id exist in the database
+# if yes, save record to DBs
 def check_and_save_record(user_id, temperature, topic):
+    global receivedMsg
     ## SAVING DATA TO CLOUD DB
     userManager = UserManager()
     check_id = userManager.readById(user_id)
@@ -51,38 +53,31 @@ def check_and_save_record(user_id, temperature, topic):
     if len(check_id) is 0:
         print('User does not exist')
         receivedMsg = 'WRONG'
-        return receivedMsg
     else:
         # Create new object with all informations
-        record = Record(id_number=user_id, location=topic, body_temperature=temperature, date=datetime.now())
+        current_time = datetime.now()
+        record = Record(id_number=user_id, location=topic, body_temperature=temperature, date=current_time)
         # Save to Database
         recordManagerAdvantech = RecordManager()
         recordManagerAdvantech.save(record)
         recordManagerAdvantech.disconnect()
 
-        # Write received data into DB
+        # Write received data into RPI DB
         with mongoClient:
             db = mongoClient.record
             col = db.data
-
-            # check temperature, publish message to the edge
+            # check temperature, set message which will be published to the edge
             if temperature < 37.5:
                 receivedMsg = 'OK'
             else:
                 receivedMsg = 'NOT OK'
-                # DO SOMETHING
-            # basically check wheter id exists or not
-            # if not, publish mqtt msg to the edge device
-
-            # If id exists
-            # Read data and save to database
-            current_time = datetime.now()
-
+                # DO SOMETHING?
+            # save to RPI DB
             read = {'id_number': user_id, 'location': topic, 'body_temperature': temperature, 'date': current_time, }
             x = col.insert_one(read)
             print('Data inserted with msg...', end='')
-            print(receivedMsg)
-            return receivedMsg
+    print(receivedMsg)
+    return receivedMsg
 
 # These functions handle what happens when the MQTT client connects
 # to the broker, and what happens then the topic receives a message
@@ -97,12 +92,13 @@ def on_connect(mqtt_client, userdata, flags, rc):
     # Once the client has connected to the broker, subscribe to the topic
     mqtt_client.subscribe(mqtt_topic)
 
+# do something when data are published
 def on_publish(mqtt_client, userdata, result):
     print('Data published')
     pass
 
-
 def on_message(mqtt_client, userdata, message):
+    global topic
     # This function is called every time the topic is published to.
     # If you want to check each message, and do something depending on
     # the content, the code to do this should be run in this function
@@ -126,11 +122,9 @@ def on_message(mqtt_client, userdata, message):
 
     result = check_and_save_record(user_id, temperature, topic)
 
-
 # Create MQTT client
 mqtt_client = mqtt.Client('NTUST')
 # Set the username and password for the MQTT client
-
 # client.username_pw_set(mqtt_username, mqtt_password)
 
 
@@ -152,13 +146,6 @@ while True:
         topic = topic + 'response'
         mqtt_client.publish(topic=topic, payload=receivedMsg)
         receivedMsg = 'False'
-    # if receivedMsg is 'OK':
-    #     mqtt_client.publish(topic=topic, payload=receivedMsg)
-    #     pass
-    # elif receivedMsg is 'NOT OK':
-    #     pass
-    # elif receivedMsg is 'WRONG':
-
     else:
         continue
 
