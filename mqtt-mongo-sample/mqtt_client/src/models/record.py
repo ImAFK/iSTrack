@@ -8,7 +8,7 @@ class Record (Document):
     location = StringField(required=True )
     body_temperature = FloatField(required=True )
     date = DateTimeField(default=datetime.datetime.now)
-
+    entry_way = StringField(required=True)
 
     # meta = {'alias': 'default', 'db': 'record'}
 

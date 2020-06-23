@@ -44,7 +44,7 @@ def check_msg():
     pass
 # check if user_id exist in the database
 # if yes, save record to DBs
-def check_and_save_record(user_id, temperature, topic):
+def check_and_save_record(user_id, temperature, topic, entry_way):
     global receivedMsg
     ## SAVING DATA TO CLOUD DB
     userManager = UserManager()
@@ -56,7 +56,11 @@ def check_and_save_record(user_id, temperature, topic):
     else:
         # Create new object with all informations
         current_time = datetime.now()
-        record = Record(id_number=user_id, location=topic, body_temperature=temperature, date=current_time)
+        record = Record(id_number=user_id,
+                        location=topic,
+                        body_temperature=temperature,
+                        date=current_time,
+                        entry_way=entry_way)
         # Save to Database
         recordManagerAdvantech = RecordManager()
         recordManagerAdvantech.save(record)
@@ -73,7 +77,11 @@ def check_and_save_record(user_id, temperature, topic):
                 receivedMsg = 'NOT OK'
                 # DO SOMETHING?
             # save to RPI DB
-            read = {'id_number': user_id, 'location': topic, 'body_temperature': temperature, 'date': current_time, }
+            read = {'id_number': user_id,
+                    'location': topic,
+                    'body_temperature': temperature,
+                    'date': current_time,
+                    'entry_way': entry_way}
             x = col.insert_one(read)
             print('Data inserted with msg...', end='')
     print(receivedMsg)
@@ -108,7 +116,10 @@ def on_message(mqtt_client, userdata, message):
     temperature = m_in['temperature']
     temperature = float(temperature)
     user_id = m_in['id']
+    entry_way = m_in['entry_way']
     topic = message.topic
+
+    location = topic.split('/')
 
     # JSON Example
     # {"id":"f6e314a3","temperature":"36.9"}
@@ -117,10 +128,12 @@ def on_message(mqtt_client, userdata, message):
     print(str(message.topic))
     print('Id:' + user_id)
     print('Temperature:' + str(temperature))
+    print('Location: ' + str(location[0]))
+    print('Entry_way: ' + str(entry_way))
     # The message itself is stored in the msg variable
     # and details about who sent it are stored in userdata
 
-    result = check_and_save_record(user_id, temperature, topic)
+    result = check_and_save_record(user_id, temperature, location[0], entry_way)
 
 # Create MQTT client
 mqtt_client = mqtt.Client('NTUST')
