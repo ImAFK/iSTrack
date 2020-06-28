@@ -1,0 +1,10 @@
+---
+applications:   
+- name: datasource-mongodb-proxy
+  command: npm run server
+  memory: 256M
+  disk_quota: 512M
+  instances: 1
+  buildpack: NodeJS_v1-6-24
+  health-check-type: process
+  timeout: 30

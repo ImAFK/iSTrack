@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard-mongodb-api
+spec:
+  type: ClusterIP
+  selector:
+    component: mongodb
+    user: anting-hu
+  ports:
+    - port: 3000
+      targetPort: 3000

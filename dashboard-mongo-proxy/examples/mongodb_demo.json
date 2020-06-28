@@ -1,0 +1,336 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 1,
+  "links": [],
+  "mobileUpgraded": true,
+  "panels": [
+    {
+      "StatNameList": [
+        "A"
+      ],
+      "aliasColors": {},
+      "bars": false,
+      "barwidth": 1,
+      "createUid": "52974903-0295-c6f5-2597-62d8b3a28fae",
+      "currentTimePoints": true,
+      "customInterval": null,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "mongo-datasource",
+      "discrete": false,
+      "discreteDataType": "max",
+      "discreteShiftDay": 0,
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "isMath": false,
+      "isMathInputVal": false,
+      "isMathTip": false,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "mathInputVal": "",
+      "metricRuleObjArr": [],
+      "needDrawCL": {
+        "isCl": false,
+        "lineColor": "rgba(0, 191, 255, 0.7)",
+        "target": "",
+        "value": ""
+      },
+      "needDrawLCL": {
+        "isLcl": false,
+        "lineColor": "rgba(255, 165, 0, 0.7)",
+        "target": "",
+        "value": ""
+      },
+      "needDrawUCL": {
+        "isUcl": false,
+        "lineColor": "rgba(0, 255, 255, 0.7)",
+        "target": "",
+        "value": ""
+      },
+      "nullPointMode": "null",
+      "openInNewTabOption": true,
+      "openIncludeTimeRangeOption": true,
+      "panelThemeStyle": "50,50,51",
+      "percentage": false,
+      "plotDbclick": true,
+      "plotselectedchb": true,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "selectedStatName": "",
+      "seriesOverrides": [],
+      "skipUrl": null,
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "rawQuery": true,
+          "refId": "A",
+          "target": "db.dummy.aggregate([\n    { \"$match\" : { \"ts\" : { \"$gte\" : \"$from\", \"$lt\" : \"$to\" }}}\n])",
+          "type": "timeserie"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Dummy Data Trend",
+      "titleAdjFontSize": true,
+      "titleFontSize": "0.8vw",
+      "titleFontSizeVal": "70%",
+      "titleShowSize": "",
+      "titleTxtAlign": "center",
+      "titleTxtBold": "normal",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparentRange": 0,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "format": "Autoscale",
+        "mode": "time",
+        "name": null,
+        "nsformat": "Autoscale",
+        "precision": "ms",
+        "show": true,
+        "timeRangeAdjustable": false,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "columns": [],
+      "createUid": "ab34b490-5460-52c1-a44f-7947374ab836",
+      "datasource": "mongo-datasource",
+      "fontAdjustable": true,
+      "fontSize": "100%",
+      "fontSizePX": "15px",
+      "fontSizeStyle": {
+        "font-size": "0.8vw"
+      },
+      "fontSizeVW": "0.8vw",
+      "fontSizeVal": "70%",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 4,
+      "links": [],
+      "pageSize": null,
+      "panelThemeStyle": "50,50,51",
+      "scroll": true,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "rawQuery": true,
+          "refId": "A",
+          "target": "db.dummy.aggregate([\n    { \"$match\" : { \"ts\" : { \"$gte\" : \"$from\", \"$lt\" : \"$to\" }}}\n])",
+          "type": "timeserie"
+        }
+      ],
+      "title": "Raw Data Table",
+      "titleAdjFontSize": true,
+      "titleFontSize": "0.8vw",
+      "titleFontSizeVal": "70%",
+      "titleShowSize": "",
+      "titleTxtAlign": "center",
+      "titleTxtBold": "normal",
+      "transform": "timeseries_to_columns",
+      "transparentRange": 0,
+      "type": "table"
+    },
+    {
+      "columns": [],
+      "createUid": "85e54d7b-12ea-a0f7-f389-1b863ea461e6",
+      "customInterval": null,
+      "datasource": "mongo-datasource",
+      "fontAdjustable": true,
+      "fontSize": "100%",
+      "fontSizePX": "15px",
+      "fontSizeStyle": {
+        "font-size": "0.8vw"
+      },
+      "fontSizeVW": "0.8vw",
+      "fontSizeVal": "70%",
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 2,
+      "links": [],
+      "pageSize": null,
+      "panelThemeStyle": "50,50,51",
+      "scroll": true,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
+      "targets": [
+        {
+          "rawQuery": true,
+          "refId": "A",
+          "target": "db.dummy.aggregate([\n    { \"$match\" : { \"ts\" : { \"$gte\" : \"$from\", \"$lt\" : \"$to\" }}},\n    { \"$group\" : { \"_id\" : \"$name\", \"total\" : { \"$sum\" : \"$value\" }, \"ts\" : { \"$max\" : \"$ts\" } }},\n    { \"$project\" : { \"name\" : \"$_id\", \"value\" : \"$total\", \"ts\" : 1, \"_id\" : 0 } }\n])",
+          "type": "timeserie"
+        }
+      ],
+      "title": "Aggregation Table",
+      "titleAdjFontSize": true,
+      "titleFontSize": "0.8vw",
+      "titleFontSizeVal": "70%",
+      "titleShowSize": "",
+      "titleTxtAlign": "center",
+      "titleTxtBold": "normal",
+      "transform": "timeseries_to_columns",
+      "transparentRange": 0,
+      "type": "table"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 16,
+  "style": "gray",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "2019-06-20T22:41:15.705Z",
+    "to": "2019-06-21T10:41:15.707Z"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "mongodb_demo",
+  "uid": "F5SrvenZk",
+  "version": 1
+}

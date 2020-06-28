@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard-mongodb-api
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      component: mongodb
+      user: anting-hu
+  template:
+    metadata:
+      labels:
+        component: mongodb
+        user: anting-hu
+    spec:
+      containers:
+        - name: mongodb
+          image: danny0112/dashboard-mongodb-api:demo1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          resources:
+            limits:
+              cpu: 20m
+              memory: 64Mi
+              ephemeral-storage: 64Mi
+            requests:
+              cpu: 20m
+              memory: 64Mi
+          env:
+            - name: ENSAAS_SERVICES
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: ENSAAS_SERVICES
