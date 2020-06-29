@@ -84,9 +84,9 @@ For testing, you need first to scan you card with the RFID reader. If your user 
 
 ## Author
 
-* **Ondrej Vokoun** 
-* **Freddy Sossa** 
-* **AnTing Hu** 
+* **[Ondrej Vokoun](https://github.com/ImAFK)** 
+* **[Freddy Sossa](https://github.com/fredsossa1)** 
+* **[AnTing Hu](https://github.com/HuSalt)** 
 * **Andrea Blumer** 
 
 ## License
