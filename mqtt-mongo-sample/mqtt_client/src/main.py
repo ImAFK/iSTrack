@@ -47,6 +47,8 @@ def check_msg():
 def check_and_save_record(user_id, temperature, topic, entry_way):
     global receivedMsg
     ## SAVING DATA TO CLOUD DB
+    longitude = 121.540561
+    latitude = 25.013458
     userManager = UserManager()
     check_id = userManager.readById(user_id)
     userManager.disconnect()
@@ -56,8 +58,13 @@ def check_and_save_record(user_id, temperature, topic, entry_way):
     else:
         # Create new object with all informations
         current_time = datetime.now()
+        if topic == 'NTUST':
+            longitude = 121.540561
+            latitude = 25.013458
         record = Record(id_number=user_id,
                         location=topic,
+                        longitude=longitude,
+                        latitude=latitude,
                         body_temperature=temperature,
                         date=current_time,
                         entry_way=entry_way)
@@ -79,6 +86,8 @@ def check_and_save_record(user_id, temperature, topic, entry_way):
             # save to RPI DB
             read = {'id_number': user_id,
                     'location': topic,
+                    'longitude': longitude,
+                    'latitude': latitude,
                     'body_temperature': temperature,
                     'date': current_time,
                     'entry_way': entry_way}
